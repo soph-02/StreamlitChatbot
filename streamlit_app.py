@@ -1,8 +1,9 @@
 import streamlit as st
+import random
 from openai import OpenAI
 
 # Show title and description.
-st.title("💬 Chatbot")
+st.title("Guess the Number Chatbot 🔢")
 st.write(
     "This is a simple chatbot that uses OpenAI's GPT-3.5 model to generate responses. "
     "To use this app, you need to provide an OpenAI API key, which you can get [here](https://platform.openai.com/account/api-keys). "
@@ -16,7 +17,6 @@ openai_api_key = st.text_input("OpenAI API Key", type="password")
 if not openai_api_key:
     st.info("Please add your OpenAI API key to continue.", icon="🗝️")
 else:
-
     # Create an OpenAI client.
     client = OpenAI(api_key=openai_api_key)
 
@@ -32,13 +32,7 @@ else:
 
     # Create a chat input field to allow the user to enter a message. This will display
     # automatically at the bottom of the page.
-    if prompt := st.chat_input("What is up?"):
-
         # Store and display the current prompt.
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
-
         # Generate a response using the OpenAI API.
         stream = client.chat.completions.create(
             model="gpt-3.5-turbo",
@@ -54,3 +48,56 @@ else:
         with st.chat_message("assistant"):
             response = st.write_stream(stream)
         st.session_state.messages.append({"role": "assistant", "content": response})
+
+    if "number" not in st.session_state:
+        st.session_state.number = random.randint(1,9999)
+
+    if "game_over" not in st.session_state:
+        st.session_state.game_over = False
+
+    st.write("I am thinking of a number between 1-9999")
+    st.write("I will tell you if my number is higher or lower than your guess")
+    
+    userInput = st.chat_input("Enter your answer: ")
+
+    if userInput is not None and not st.session_state.game_over:
+        try:
+            userInput = int(userInput)
+
+            if  userInput > 9999:
+                st.write("Number is too high!")
+                st.write("Enter a valid number between 1-9999")
+                
+            elif userInput < 1:
+                st.write("Number is too low!")
+                st.write("Enter a valid number between 1-9999")
+
+            elif userInput < st.session_state.number:
+                st.write(f"{userInput} is lower than my number")
+                st.write("Try again ")
+
+            elif userInput > st.session_state.number:
+                st.write(f"{userInput} is higher than my number")
+                st.write("Try again! ")
+
+            else:
+                st.write(f"🎉 {userInput} is the number I was thinking of!")
+                st.session_state.game_over = True
+
+        except ValueError:
+                st.write("Invalid input")
+                st.write("Enter a valid number between 1-9999")
+                
+    if st.session_state.game_over:
+        st.write("Thanks for playing!")
+        st.write("Do you want to play again? (yes/no)")
+
+        if userInput is not None:
+
+            if userInput == "yes":
+                st.session_state.number = random.randint(1, 9999)
+                st.session_state.game_over = False
+                st.rerun()
+
+            elif userInput == "no":
+                st.write("👋 See you next time")
