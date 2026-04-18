@@ -4,11 +4,10 @@ A simple Streamlit chatbot app using OpenAI's GPT-3.5 where users must guess a n
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://chatbot-dj46w0coyd8.streamlit.app/)
 
-### How to run it on your own machine
 ##Overview
 After entering an OpenAI API Key, users can begin playing Guess the Number. After each guess, the user will be told if their number is higher or lower than the target number. After guessing the correct number, players have the option to restart the game and start guessing again!
 
-##Instructions
+## Instructions
 
 1. Open link to project
 2. Login or Sign up to OpenAI
